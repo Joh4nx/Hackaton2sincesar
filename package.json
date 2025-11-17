@@ -1,0 +1,10 @@
+{
+  "name": "micro-mono",
+  "private": true,
+  "scripts": {
+    "dev": "pnpm -r --parallel dev",
+    "build": "pnpm -r build",
+    "start": "pnpm -r start",
+    "install:all": "pnpm -r install"
+  }
+}
