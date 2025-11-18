@@ -151,6 +151,31 @@ export default function Cuentas() {
     return `${c.name} (${c.ci})`;
   };
 
+  const getEstadoChipStyle = (status: string) => {
+    if (status === "ACTIVA") {
+      return {
+        background: "rgba(34,197,94,0.12)",
+        color: "rgb(74,222,128)",
+        border: "1px solid rgba(34,197,94,0.45)",
+      };
+    }
+    if (status === "BLOQUEADA") {
+      return {
+        background: "rgba(234,179,8,0.12)",
+        color: "rgb(250,204,21)",
+        border: "1px solid rgba(234,179,8,0.45)",
+      };
+    }
+    return {
+      background: "rgba(248,113,113,0.12)",
+      color: "rgb(248,113,113)",
+      border: "1px solid rgba(248,113,113,0.45)",
+    };
+  };
+
+  const getTipoLabel = (type: string) =>
+    type === "CORRIENTE" ? "Cuenta corriente" : "Caja de ahorro";
+
   return (
     <div className="container">
       <div className="hero">
@@ -160,94 +185,286 @@ export default function Cuentas() {
         </p>
       </div>
 
-      <div className="grid" style={{ marginTop: 18 }}>
-        {/* Columna izquierda: crear cuenta y filtro */}
-        <div className="col-4">
-          <div className="card" style={{ padding: 16 }}>
-            <h3 style={{ marginTop: 0 }}>Nueva cuenta</h3>
-            <form onSubmit={onCreate} className="form-grid">
-              <label>
-                Cliente*
-                <select
-                  value={form.clientId}
-                  onChange={(e) =>
-                    setForm({ ...form, clientId: e.target.value })
-                  }
-                  required
-                >
-                  <option value="">Seleccione un cliente</option>
-                  {clientes.map((c) => (
-                    <option key={c._id} value={c._id}>
-                      {c.name} ({c.ci})
-                    </option>
-                  ))}
-                </select>
-              </label>
-
-              <label>
-                Tipo de cuenta
-                <select
-                  value={form.type}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      type: e.target.value as "AHORRO" | "CORRIENTE",
-                    })
-                  }
-                >
-                  <option value="AHORRO">Ahorro</option>
-                  <option value="CORRIENTE">Corriente</option>
-                </select>
-              </label>
-
-              <label>
-                Moneda
-                <select
-                  value={form.currency}
-                  onChange={(e) =>
-                    setForm({
-                      ...form,
-                      currency: e.target.value as "BOB" | "USD",
-                    })
-                  }
-                >
-                  <option value="BOB">BOB</option>
-                  <option value="USD">USD</option>
-                </select>
-              </label>
-
-              <label>
-                Alias (opcional)
-                <input
-                  value={form.alias}
-                  onChange={(e) =>
-                    setForm({ ...form, alias: e.target.value })
-                  }
-                  placeholder="Cuenta sueldo, ahorro viaje…"
-                />
-              </label>
-
-              <div style={{ display: "flex", gap: 8, marginTop: 8 }}>
-                <button className="btn btn-accent" type="submit">
-                  Crear cuenta
-                </button>
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          gap: 18,
+          marginTop: 18,
+        }}
+      >
+        {/* TARJETA ARRIBA: Apertura de cuenta */}
+        <div
+          className="card"
+          style={{
+            padding: 24,
+            borderRadius: 18,
+            border: "1px solid rgba(148,163,184,0.35)",
+          }}
+        >
+          {/* Encabezado */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "flex-start",
+              marginBottom: 18,
+            }}
+          >
+            <div>
+              <div
+                style={{
+                  fontSize: 13,
+                  textTransform: "uppercase",
+                  letterSpacing: "0.14em",
+                  color: "var(--muted)",
+                  marginBottom: 4,
+                }}
+              >
+                Apertura de cuenta
               </div>
-            </form>
+              <h3
+                style={{
+                  margin: 0,
+                  fontSize: 22,
+                  fontWeight: 600,
+                }}
+              >
+                Nueva cuenta
+              </h3>
+              <p
+                style={{
+                  marginTop: 6,
+                  fontSize: 13,
+                  color: "var(--muted)",
+                }}
+              >
+                Selecciona el cliente, el tipo de cuenta y la moneda. El número
+                de cuenta se generará automáticamente.
+              </p>
+            </div>
 
-            {err && (
-              <div style={{ marginTop: 8, color: "#fecaca" }}>
-                Error: {err}
-              </div>
-            )}
+            <div
+              style={{
+                padding: "6px 12px",
+                borderRadius: 999,
+                fontSize: 12,
+                textTransform: "uppercase",
+                letterSpacing: "0.12em",
+                background:
+                  form.type === "CORRIENTE"
+                    ? "rgba(59,130,246,0.12)"
+                    : "rgba(45,212,191,0.12)",
+                color:
+                  form.type === "CORRIENTE"
+                    ? "rgb(96,165,250)"
+                    : "rgb(45,212,191)",
+                border:
+                  form.type === "CORRIENTE"
+                    ? "1px solid rgba(59,130,246,0.45)"
+                    : "1px solid rgba(45,212,191,0.45)",
+              }}
+            >
+              {getTipoLabel(form.type)}
+            </div>
           </div>
 
-          <div className="card" style={{ padding: 16, marginTop: 16 }}>
-            <h3 style={{ marginTop: 0 }}>Filtrar por cliente</h3>
+          {/* FORMULARIO grande */}
+          <form
+            onSubmit={onCreate}
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              gap: 16,
+            }}
+          >
+            <label
+              style={{
+                fontSize: 14,
+                display: "flex",
+                flexDirection: "column",
+                gap: 6,
+              }}
+            >
+              <span>
+                Cliente<span style={{ color: "#f97373" }}>*</span>
+              </span>
+              <select
+                value={form.clientId}
+                onChange={(e) =>
+                  setForm({ ...form, clientId: e.target.value })
+                }
+                required
+              >
+                <option value="">Seleccione un cliente</option>
+                {clientes.map((c) => (
+                  <option key={c._id} value={c._id}>
+                    {c.name} ({c.ci})
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label
+              style={{
+                fontSize: 14,
+                display: "flex",
+                flexDirection: "column",
+                gap: 6,
+              }}
+            >
+              <span>Tipo de cuenta</span>
+              <select
+                value={form.type}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    type: e.target.value as "AHORRO" | "CORRIENTE",
+                  })
+                }
+              >
+                <option value="AHORRO">Caja de ahorro</option>
+                <option value="CORRIENTE">Cuenta corriente</option>
+              </select>
+            </label>
+
+            <label
+              style={{
+                fontSize: 14,
+                display: "flex",
+                flexDirection: "column",
+                gap: 6,
+              }}
+            >
+              <span>Moneda</span>
+              <select
+                value={form.currency}
+                onChange={(e) =>
+                  setForm({
+                    ...form,
+                    currency: e.target.value as "BOB" | "USD",
+                  })
+                }
+              >
+                <option value="BOB">Bolivianos (BOB)</option>
+                <option value="USD">Dólares (USD)</option>
+              </select>
+            </label>
+
+            <label
+              style={{
+                fontSize: 14,
+                display: "flex",
+                flexDirection: "column",
+                gap: 6,
+                gridColumn: "1 / -1",
+              }}
+            >
+              <span>Alias (opcional)</span>
+              <input
+                value={form.alias}
+                onChange={(e) =>
+                  setForm({ ...form, alias: e.target.value })
+                }
+                placeholder="Cuenta sueldo, ahorro viaje…"
+              />
+            </label>
+
+            {/* Resumen de apertura */}
+            <div
+              style={{
+                gridColumn: "1 / -1",
+                display: "flex",
+                justifyContent: "space-between",
+                alignItems: "center",
+                padding: "12px 14px",
+                borderRadius: 12,
+                background: "rgba(15,23,42,0.9)",
+                border: "1px solid rgba(148,163,184,0.45)",
+              }}
+            >
+              <div style={{ fontSize: 13, color: "var(--muted)" }}>
+                <div>
+                  <strong>Tipo:</strong> {getTipoLabel(form.type)}
+                </div>
+                <div>
+                  <strong>Moneda:</strong> {form.currency}
+                </div>
+                <div>
+                  <strong>Cliente:</strong>{" "}
+                  {form.clientId
+                    ? getClienteLabel(form.clientId)
+                    : "Sin seleccionar"}
+                </div>
+              </div>
+              <div
+                style={{
+                  fontSize: 11,
+                  color: "var(--muted)",
+                  textAlign: "right",
+                }}
+              >
+                El número de cuenta será asignado automáticamente
+                <br />
+                al confirmar la apertura.
+              </div>
+            </div>
+
+            {/* Botones */}
+            <div
+              style={{
+                gridColumn: "1 / -1",
+                display: "flex",
+                justifyContent: "flex-end",
+                gap: 8,
+                marginTop: 4,
+              }}
+            >
+              <button className="btn btn-accent" type="submit">
+                Crear cuenta
+              </button>
+            </div>
+          </form>
+
+          {err && (
+            <div
+              style={{
+                marginTop: 12,
+                padding: "8px 10px",
+                borderRadius: 8,
+                fontSize: 13,
+                background: "rgba(248,113,113,0.08)",
+                border: "1px solid rgba(248,113,113,0.45)",
+                color: "#fecaca",
+              }}
+            >
+              Error: {err}
+            </div>
+          )}
+        </div>
+
+        {/* TARJETA ABAJO: listado tipo TARJETAS DE BANCO */}
+        <div className="card" style={{ padding: 18, borderRadius: 16 }}>
+          {/* Header listado + filtro */}
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              marginBottom: 12,
+              alignItems: "center",
+              gap: 12,
+            }}
+          >
+            <div>
+              <h3 style={{ margin: 0 }}>Cuentas bancarias</h3>
+              <span style={{ fontSize: 12, color: "var(--muted)" }}>
+                {rows.length} cuenta(s) encontradas
+              </span>
+            </div>
             <div style={{ display: "flex", gap: 8 }}>
               <select
                 value={clientFilter}
                 onChange={(e) => setClientFilter(e.target.value)}
-                style={{ flex: 1 }}
               >
                 <option value="">Todos los clientes</option>
                 {clientes.map((c) => (
@@ -261,108 +478,197 @@ export default function Cuentas() {
               </button>
             </div>
           </div>
-        </div>
 
-        {/* Columna derecha: tabla de cuentas */}
-        <div className="col-8">
-          <div className="card" style={{ padding: 16 }}>
+          {/* Grid de tarjetas */}
+          {rows.length === 0 ? (
+            <div style={{ color: "var(--muted)", fontSize: 14 }}>
+              No hay cuentas registradas.
+            </div>
+          ) : (
             <div
               style={{
-                display: "flex",
-                justifyContent: "space-between",
-                marginBottom: 8,
+                display: "grid",
+                gridTemplateColumns:
+                  "repeat(auto-fit, minmax(260px, 1fr))",
+                gap: 14,
               }}
             >
-              <h3 style={{ margin: 0 }}>Listado de cuentas</h3>
-              <button className="btn" onClick={loadCuentas} disabled={loading}>
-                {loading ? "Cargando…" : "Refrescar"}
-              </button>
-            </div>
-
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>Número</th>
-                  <th>Cliente</th>
-                  <th>Saldo</th>
-                  <th>Moneda</th>
-                  <th>Estado</th>
-                  <th style={{ width: 260 }}>Acciones</th>
-                </tr>
-              </thead>
-              <tbody>
-                {rows.length === 0 && (
-                  <tr>
-                    <td colSpan={6} style={{ color: "var(--muted)" }}>
-                      No hay cuentas.
-                    </td>
-                  </tr>
-                )}
-                {rows.map((acc) => (
-                  <tr key={acc._id}>
-                    <td>
-                      <div style={{ fontWeight: 600 }}>{acc.number}</div>
+              {rows.map((acc) => (
+                <div
+                  key={acc._id}
+                  style={{
+                    borderRadius: 18,
+                    padding: 14,
+                    background:
+                      "radial-gradient(circle at 0% 0%, rgba(56,189,248,0.18), transparent 55%), radial-gradient(circle at 100% 100%, rgba(59,130,246,0.14), transparent 55%), rgba(15,23,42,0.96)",
+                    border: "1px solid rgba(148,163,184,0.35)",
+                    display: "flex",
+                    flexDirection: "column",
+                    gap: 8,
+                    boxShadow:
+                      "0 18px 40px rgba(15,23,42,0.65), 0 0 0 1px rgba(15,23,42,0.9)",
+                  }}
+                >
+                  {/* Header tarjeta: número + estado */}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-start",
+                      gap: 6,
+                    }}
+                  >
+                    <div>
+                      <div
+                        style={{
+                          fontSize: 11,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.16em",
+                          color: "rgba(148,163,184,0.85)",
+                        }}
+                      >
+                        {getTipoLabel(acc.type)}
+                      </div>
+                      <div
+                        style={{
+                          fontFamily: "monospace",
+                          fontSize: 15,
+                          marginTop: 4,
+                        }}
+                      >
+                        {acc.number}
+                      </div>
                       {acc.alias && (
                         <div
-                          style={{ fontSize: 12, color: "var(--muted)" }}
+                          style={{
+                            fontSize: 12,
+                            color: "rgba(148,163,184,0.9)",
+                            marginTop: 2,
+                          }}
                         >
                           {acc.alias}
                         </div>
                       )}
-                    </td>
-                    <td>{getClienteLabel(acc.clientId)}</td>
-                    <td>{acc.balance.toFixed(2)}</td>
-                    <td>{acc.currency}</td>
-                    <td>{acc.status}</td>
-                    <td>
+                    </div>
+
+                    <span
+                      style={{
+                        padding: "2px 8px",
+                        borderRadius: 999,
+                        fontSize: 11,
+                        textTransform: "uppercase",
+                        letterSpacing: "0.08em",
+                        ...getEstadoChipStyle(acc.status),
+                      }}
+                    >
+                      {acc.status}
+                    </span>
+                  </div>
+
+                  {/* Cliente + saldo */}
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "flex-end",
+                      marginTop: 4,
+                      gap: 8,
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontSize: 12,
+                        color: "rgba(148,163,184,0.95)",
+                      }}
+                    >
+                      <div style={{ fontSize: 11, opacity: 0.8 }}>
+                        Titular
+                      </div>
+                      <div style={{ fontSize: 13 }}>
+                        {getClienteLabel(acc.clientId)}
+                      </div>
+                    </div>
+
+                    <div style={{ textAlign: "right" }}>
                       <div
                         style={{
-                          display: "flex",
-                          gap: 6,
-                          flexWrap: "wrap",
+                          fontSize: 10,
+                          textTransform: "uppercase",
+                          letterSpacing: "0.16em",
+                          color: "rgba(148,163,184,0.8)",
                         }}
                       >
-                        <button
-                          className="btn"
-                          onClick={() => doDeposit(acc)}
-                        >
-                          Depositar
-                        </button>
-                        <button
-                          className="btn btn-warning"
-                          onClick={() => doWithdraw(acc)}
-                        >
-                          Retirar
-                        </button>
-                        <button
-                          className="btn"
-                          onClick={() => changeStatus(acc, "ACTIVA")}
-                          disabled={acc.status === "ACTIVA"}
-                        >
-                          Activar
-                        </button>
-                        <button
-                          className="btn"
-                          onClick={() => changeStatus(acc, "BLOQUEADA")}
-                          disabled={acc.status === "BLOQUEADA"}
-                        >
-                          Bloquear
-                        </button>
-                        <button
-                          className="btn btn-danger"
-                          onClick={() => changeStatus(acc, "CERRADA")}
-                          disabled={acc.status === "CERRADA"}
-                        >
-                          Cerrar
-                        </button>
+                        Saldo disponible
                       </div>
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+                      <div
+                        style={{
+                          fontSize: 18,
+                          fontWeight: 600,
+                          marginTop: 2,
+                        }}
+                      >
+                        {acc.balance.toFixed(2)}{" "}
+                        <span
+                          style={{
+                            fontSize: 11,
+                            color: "rgba(148,163,184,0.9)",
+                          }}
+                        >
+                          {acc.currency}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
 
-          </div>
+                  {/* Acciones */}
+                  <div
+                    style={{
+                      display: "flex",
+                      flexWrap: "wrap",
+                      gap: 6,
+                      marginTop: 10,
+                      borderTop: "1px solid rgba(30,64,175,0.6)",
+                      paddingTop: 8,
+                    }}
+                  >
+                    <button
+                      className="btn"
+                      onClick={() => doDeposit(acc)}
+                    >
+                      Depositar
+                    </button>
+                    <button
+                      className="btn btn-warning"
+                      onClick={() => doWithdraw(acc)}
+                    >
+                      Retirar
+                    </button>
+                    <button
+                      className="btn"
+                      onClick={() => changeStatus(acc, "ACTIVA")}
+                      disabled={acc.status === "ACTIVA"}
+                    >
+                      Activar
+                    </button>
+                    <button
+                      className="btn"
+                      onClick={() => changeStatus(acc, "BLOQUEADA")}
+                      disabled={acc.status === "BLOQUEADA"}
+                    >
+                      Bloquear
+                    </button>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => changeStatus(acc, "CERRADA")}
+                      disabled={acc.status === "CERRADA"}
+                    >
+                      Cerrar
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

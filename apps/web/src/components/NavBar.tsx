@@ -18,7 +18,7 @@ export default function NavBar() {
   return (
     <nav className="nav">
       <Link to="/" style={{ fontWeight: 700 }}>
-        BancaMicro
+        BancaChuno
       </Link>
 
       {user && (
